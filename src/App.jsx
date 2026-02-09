@@ -1,5 +1,4 @@
-
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './App.css'
 import Card from './Components/Card'
 import { db } from './Components/db/db'
@@ -12,18 +11,20 @@ function App() {
   const [total, setTotal] = useState(0)
   const [products, setProducts] = useState([])
   const [modal, setModal] = useState(false)
-  
-  console.log(total)
 
   const [data, setData] = useState(db)
 
-  console.log(data)
 
-  const [cart, setCart] = useState([])
+  const initialCart = () => {
+    const localStorageCart = localStorage.getItem('cart')
+    return localStorageCart ? JSON.parse(localStorageCart) : []
+  }
 
-  //useEffect(()=>{
-  //  setData(db)
-  //},[])
+  const [cart, setCart] = useState(initialCart)
+
+  useEffect(() => {
+    localStorage.setItem('cart', JSON.stringify(cart))
+  }, [cart])
 
   return (
     <div>
@@ -37,17 +38,16 @@ function App() {
 
         <div className="row mt-5">
           {data.map(guitar => (
-          <Card
-            key={guitar.id}
-            guitar={guitar}
-            cart={cart}
-            setCart={setCart}
-          />
-        ))}
-
+            <Card
+              key={guitar.id}
+              guitar={guitar}
+              cart={cart}
+              setCart={setCart}
+            />
+          ))}
         </div>
       </main>
-    <Footer/>
+      <Footer/>
     </div>
   )
 }
